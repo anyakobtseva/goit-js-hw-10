@@ -30,7 +30,8 @@ const options = {
         close: false,
         closeOnClick: true,
         closeOnEscape: true,
-        message: 'Please choose a date in the future',
+        icon: null,
+        message: '❌ Please choose a date in the future',
       });
     } else {
       startButton.disabled = false;
