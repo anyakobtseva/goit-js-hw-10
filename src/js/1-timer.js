@@ -8,10 +8,12 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 let userSelectedDate;
 const startButton = document.querySelector('[data-start]');
-const days = document.querySelector('[data-days]');
-const hours = document.querySelector('[data-hours]');
-const minutes = document.querySelector('[data-minutes]');
-const seconds = document.querySelector('[data-seconds]');
+const coundtdownElements = {
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
+};
 
 const picker = 'input#datetime-picker';
 const options = {
@@ -25,12 +27,11 @@ const options = {
       startButton.disabled = true;
       iziToast.error({
         position: 'topRight',
-        backgroundColor: 'red',
         close: false,
         closeOnClick: true,
         closeOnEscape: true,
-        message: 'Please choose a date in the future'
-      })
+        message: 'Please choose a date in the future',
+      });
     } else {
       startButton.disabled = false;
     }
@@ -40,27 +41,27 @@ const options = {
 flatpickr(picker, options);
 
 startButton.addEventListener('click', async () => {
-  let timeDiff = userSelectedDate - Date.now();
-  updateDateElements(convertMs(timeDiff));
+  let timeDiff;
   while (
     (timeDiff = userSelectedDate - Date.now()) &&
     timeDiff > 0 &&
     new Date(timeDiff).getSeconds() >= 0
   ) {
-    await timeout(1000).then(() => updateDateElements(convertMs(timeDiff)));
+    updateDateElements(convertMs(timeDiff));
+    await delay(1000);
   }
 });
 
-const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function updateDateElements(newValues) {
-  Object.keys(newValues).forEach(
-    key => (newValues[key] = addLeadingZero(newValues[key].toString()))
+  Object.keys(newValues).forEach(key =>
+    coundtdownElements[key]
+      ? (coundtdownElements[key].textContent = addLeadingZero(
+          newValues[key].toString()
+        ))
+      : console.log(`Unknown element ${key}`)
   );
-  days.textContent = newValues.days;
-  hours.textContent = newValues.hours;
-  minutes.textContent = newValues.minutes;
-  seconds.textContent = newValues.seconds;
 }
 
 function addLeadingZero(value) {
